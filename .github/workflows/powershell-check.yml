@@ -1,0 +1,39 @@
+name: PowerShell Check
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "powershell/**"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "powershell/**"
+
+  workflow_dispatch:
+
+jobs:
+  test-powershell:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Analyze PowerShell scripts
+        shell: pwsh
+        run: |
+          Invoke-ScriptAnalyzer -Path ./powershell -Recurse
+
+      - name: Run system information script
+        shell: pwsh
+        run: |
+          ./powershell/get-system-info.ps1
